@@ -1,0 +1,27 @@
+name: Deploy Cloud Run
+
+on:
+  workflow_call:
+    secrets:
+      gcp-credentials:
+        required: true
+    inputs:
+      image-name:
+        type: string
+        required: true
+
+jobs:
+  deploy-cloud-run:
+    name: Deploy to Cloud Run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: ${{ secrets.gcp-credentials }}
+
+      - uses: 'google-github-actions/deploy-cloudrun@v2'
+        with:
+          service: market-researcher
+          region: europe-west1
+          project_id: linkup-api-prod
+          image: ${{ inputs.image-name }}

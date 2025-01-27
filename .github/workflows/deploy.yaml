@@ -1,0 +1,27 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docker-build-push:
+    uses: ./.github/workflows/_build-and-push.yaml
+    with:
+      gcp-infra-project-id: ${{ vars.GCP_INFRA_PROJECT_ID }}
+    secrets:
+      gcp-credentials: ${{ secrets.GCP_CREDENTIALS }}
+      sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+  deploy:
+    needs: docker-build-push
+    uses: ./.github/workflows/_deploy-cloud-run.yaml
+    with:
+      image-name: ${{ needs.docker-build-push.outputs.image-name }}
+    secrets:
+      gcp-credentials: ${{ secrets.GCP_CREDENTIALS }}

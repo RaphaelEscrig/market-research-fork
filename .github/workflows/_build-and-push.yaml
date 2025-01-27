@@ -1,0 +1,43 @@
+name: Build and Push Docker Image
+
+on:
+  workflow_call:
+    secrets:
+      gcp-credentials:
+        required: true
+      sentry-auth-token:
+        required: true
+    inputs:
+      gcp-infra-project-id:
+        type: string
+        required: true
+    outputs:
+      image-name:
+        description: "Docker Image Name"
+        value: ${{ jobs.docker-build-push.outputs.image-name }}
+
+jobs:
+  docker-build-push:
+    name: Build and Push Docker image
+    runs-on: ubuntu-latest
+    outputs:
+      image-name: ${{ steps.set-image-name.outputs.image_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set Image Name
+        id: set-image-name
+        run: echo "image_name=europe-west1-docker.pkg.dev/${{ inputs.gcp-infra-project-id }}/docker-repo/market-researcher:$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - uses: docker/login-action@v3
+        with:
+          registry: europe-west1-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.gcp-credentials }}
+
+      - uses: docker/build-push-action@v6
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.sentry-auth-token }}
+        with:
+          push: true
+          tags: ${{ steps.set-image-name.outputs.image_name }}
