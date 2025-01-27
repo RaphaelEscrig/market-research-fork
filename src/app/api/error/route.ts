@@ -1,6 +1,6 @@
 // eslint-disable-next-line func-style
 export function GET(_request: Request) {
-  throw new Error('API throw error test');
+  throw new Error('API throw error test !');
 
   return new Response('Error', {
     headers: {

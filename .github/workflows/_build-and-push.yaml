@@ -36,8 +36,6 @@ jobs:
           password: ${{ secrets.gcp-credentials }}
 
       - uses: docker/build-push-action@v6
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.sentry-auth-token }}
         with:
           push: true
           tags: ${{ steps.set-image-name.outputs.image_name }}
