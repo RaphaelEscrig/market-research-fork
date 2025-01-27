@@ -41,3 +41,5 @@ jobs:
         with:
           push: true
           tags: ${{ steps.set-image-name.outputs.image_name }}
+          build-args: |
+            SENTRY_AUTH_TOKEN=${{ secrets.sentry-auth-token }}
