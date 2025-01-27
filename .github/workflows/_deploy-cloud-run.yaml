@@ -6,6 +6,9 @@ on:
       gcp-credentials:
         required: true
     inputs:
+      gcp-infra-project-id:
+        type: string
+        required: true
       image-name:
         type: string
         required: true
@@ -23,5 +26,5 @@ jobs:
         with:
           service: market-researcher
           region: europe-west1
-          project_id: linkup-api-prod
+          project_id: ${{ inputs.gcp-infra-project-id }}
           image: ${{ inputs.image-name }}

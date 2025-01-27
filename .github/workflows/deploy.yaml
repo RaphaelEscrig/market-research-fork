@@ -22,6 +22,7 @@ jobs:
     needs: docker-build-push
     uses: ./.github/workflows/_deploy-cloud-run.yaml
     with:
+      gcp-infra-project-id: ${{ vars.GCP_INFRA_PROJECT_ID }}
       image-name: ${{ needs.docker-build-push.outputs.image-name }}
     secrets:
       gcp-credentials: ${{ secrets.GCP_CREDENTIALS }}
